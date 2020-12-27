@@ -142,3 +142,5 @@ cython_debug/
 !requirements.txt
 news_data/
 .vscode/
+*.bin
+*.json
