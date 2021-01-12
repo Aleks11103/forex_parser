@@ -140,7 +140,8 @@ cython_debug/
 
 *.txt
 !requirements.txt
+!research.txt
 news_data/
 .vscode/
-*.bin
-*.json
+
+tmp_.*
