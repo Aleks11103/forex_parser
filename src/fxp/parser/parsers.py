@@ -45,8 +45,7 @@ class Preview(BaseParser):
     def get_links(self):
         try:
             html = self._get_page(PREVIEW_URL.format(HOST, self.__num_page))
-        except ValueError as error:
-            print(error)
+        except ValueError:
             self.__links = []
         else:
             box = html.find("div", attrs={"class": "largeTitle"})
@@ -61,18 +60,18 @@ class Preview(BaseParser):
                 self.__links = []
 
     def save_to_file(self, name):
-        path = os.path.join(BASE_DIR, name + '.bin')
-        pickle.dump(self.__links, open(path, 'wb'))
+        path = os.path.join(BASE_DIR, name + ".bin")
+        pickle.dump(self.__links, open(path, "wb"))
 
     def save_to_json(self, name):
-        path = os.path.join(BASE_DIR, name + '.json')
-        json.dump(self.__links, open(path, 'w'))
+        path = os.path.join(BASE_DIR, name + ".json")
+        json.dump(self.__links, open(path, "w"))
 
 
 if __name__ == "__main__":
     parser = Preview(page=2)
     parser.get_links()
-    for i in parser._Preview__links:
-        print(i)
+    # for i in parser._Preview__links:
+    #     print(i)
     parser.save_to_json('links_2')
     parser.save_to_file('links_2')
