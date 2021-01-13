@@ -1,3 +1,4 @@
+  
 import os
 import json
 import pickle
@@ -5,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup as BS
 from abc import ABC, abstractmethod
 
-from fxp.parser import DEFAULT_USER_AGENT, HOST, PREVIEW_URL, BASE_DIR
+from fxp.parser import BASE_DIR, DEFAULT_USER_AGENT, HOST, PREVIEW_URL
 
 class _Base(type):
     # Перехватываем момент создания класса
@@ -18,7 +19,6 @@ class _Base(type):
         if cls.__name__ == "Preview":
             cls.__bases__[0].page = obj._Preview__num_page
         return obj
-
 
 class BaseMeta(metaclass=_Base):
     """Base metaclass"""
@@ -34,8 +34,10 @@ class BaseParser(BaseMeta):
             if self.page < 1:
                 raise ValueError("Page is < 1")
         response = requests.get(
-            url, 
-            headers={"User-Agent": self._user_agent}
+            url,
+            headers={
+                "User-Agent": self._user_agent
+            }
         )
         if hasattr(self, "page"):
             if not response.url.endswith(str(self.page)) and self.page != 1:
@@ -47,7 +49,6 @@ class BaseParser(BaseMeta):
     @abstractmethod
     def save_to_file(self, name: str) -> None:
         """Save news to file
-
         Args:
             name (str): [description]
         """
@@ -55,7 +56,6 @@ class BaseParser(BaseMeta):
     @abstractmethod
     def save_to_json(self, path: str) -> None:
         """Save news to json file
-
         Args:
             path (str): [description]
         """
@@ -77,8 +77,7 @@ class Preview(BaseParser):
             box = html.find("div", attrs={"class": "largeTitle"})
             if box is not None:
                 articles = box.find_all(
-                    "article", attrs={"class": "js-article-item articleItem"}
-                )
+                    "article", attrs={"class": "js-article-item articleItem"})
                 for article in articles:
                     link = article.find("a", attrs={"class": "title"})
                     self.__links.append(HOST + link.get("href"))
@@ -98,22 +97,56 @@ class Preview(BaseParser):
             self.__cursor += 1
 
     # Реализовать метод, который будет возвращать новый объект, содержащий срез из элементов списка
-    # def __getitem__(self, index):   # 
-    #     print(index)
+    def __getitem__(self, index):
+        try:
+            print("\n")
+            return self.__links[index]
+        except TypeError:
+            print("Ошибка TypeError")
+        except IndexError:
+            print("Выход за границы списка")
 
     def save_to_file(self, name):
         path = os.path.join(BASE_DIR, name + ".bin")
         pickle.dump(self.__links, open(path, "wb"))
+
 
     def save_to_json(self, name):
         path = os.path.join(BASE_DIR, name + ".json")
         json.dump(self.__links, open(path, "w"))
 
 
+class NewsParser(BaseParser):
+    def __init__(self, url):
+        self._url = url
+        self.news = {}
+
+    def get_news(self):
+        try:
+            html = self._get_page(self._url)
+        except ValueError as error:
+            print(error)
+        else:
+            box = html.find("section", attrs={"id": "leftColumn"})
+            if box is not None:
+                self.news["head"] = box.find("h1", attrs={"class": "articleHeader"}).text
+                box_date = box.find("div", attrs={"class": "contentSectionDetails"})
+                news_date = box_date.find("span").text
+
+
 if __name__ == "__main__":
-    parser = Preview(page=2)
+    parser = Preview(page=1)
     parser.get_links()
     # for i in parser._Preview__links:
     #     print(i)
-    parser.save_to_json('links_2')
-    parser.save_to_file('links_2')
+    parser.save_to_json('tmp_links_2')
+    parser.save_to_file('tmp_links_2')
+    for link in parser:
+        print(link)
+    print(len(parser._Preview__links))
+
+    print(parser[-13])
+    print(parser[1:2])
+    print(parser[:2:1])
+    print(parser[:-10:1])
+    # print(parser["key"]) # Как обратиться к элементу списку по ключу?
