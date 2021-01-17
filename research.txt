@@ -3,5 +3,9 @@
 # Sponsered - не используется
 # Присутствует рекламный блок
 
+
+Временная зона в буквенном варианте не определяется в datetime. Для этого можно использовать dateutil(python-dateutil), но он не знает что такое ET
 Jan 05, 2021 11:22PM ET
 %b %d, %Y %H:%M%p 
+
+#leftColumn > div.WYSIWYG.articlePage

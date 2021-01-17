@@ -145,3 +145,5 @@ news_data/
 .vscode/
 
 tmp_*
+*.json
+*.txt
