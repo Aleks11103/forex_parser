@@ -1,4 +1,3 @@
-  
 import os
 import re
 import json
@@ -212,11 +211,10 @@ if __name__ == "__main__":
     links.get_links()
     for link in links._Preview__links:
         print(link)
-    print(links._Preview__links.__len__())
     print("=" * 200)
     # news(links[0])
-    # print(links[-13], end="\n\n")
-    # print([el for el in links[1:2]], end="\n\n")
-    # print([el for el in links[:2:1]], end="\n\n")
-    # print([el for el in links[:-5:1]], end="\n\n")
-    # print(links["key"]) # Как обратиться к элементу списку по ключу?
+    print(links[-13])
+    print([el for el in links[1:2]])
+    print([el for el in links[:2:1]])
+    print([el for el in links[:-5:1]])
+    print(links["key"]) # Как обратиться к элементу списку по ключу?

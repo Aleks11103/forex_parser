@@ -86,8 +86,9 @@ def stop():
     if os.path.isfile(args.pid_file):
         with open(args.pid_file, "r") as pid_file:
             pid = int(pid_file.read().strip())
-            print(pid)
-        os.kill(pid)
+        os.kill(pid, signal.SIGTERM)
+    else:
+        print("NOT FOUND")
 
 if args.daemon and args.kill:
     raise RuntimeError("Or daemon or kill!!!")
@@ -108,10 +109,7 @@ if args.daemon:
         with open(args.pid_file, "w") as pid_file:
             pid_file.write(str(os.getpid()))
         signal.signal(signal.SIGTERM, stop_handler)
-        try:
-            start()
-        except:
-            pass
+        start()
     else:
         print(pid)
 else:
@@ -122,7 +120,6 @@ else:
 
 
 if args.kill:
-    try:
-        stop()
-    finally:
-            os.unlink(args.pid_file)
+    stop()
+    os.unlink(args.pid_file)
+    exit(0)
